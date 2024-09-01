@@ -36,6 +36,6 @@ if ! command -v googler &> /dev/null; then
 else
     echo "googler is already installed."
 fi
-go build test1.go
-sudo mv test1 /usr/local/bin
+go build Acqui_scout.go
+sudo mv Acqui_scout /usr/local/bin
 echo "All requirements are installed and ready to go!"
