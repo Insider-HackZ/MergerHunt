@@ -14,7 +14,7 @@ import (
 
 
 func checkForNewVersion() {
-	const localVersion = "v0.1.0"
+	const localVersion = "v0.0.1"
 	repoURL := "https://api.github.com/repos/Byte-BloggerBase/Acqui_scout/releases/latest"
 
 	resp, err := http.Get(repoURL)
