@@ -9,10 +9,93 @@ import (
 	"os/exec"
 	"strings"
 	"strconv"
+	"encoding/json"
 )
+
+
+func checkForNewVersion() {
+	const localVersion = "v0.1.0"
+	repoURL := "https://api.github.com/repos/Byte-BloggerBase/Acqui_scout/releases/latest"
+
+	resp, err := http.Get(repoURL)
+	if err != nil {
+		fmt.Println("Error fetching latest version:", err)
+		return
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		fmt.Printf("Failed to get latest version: %s\n", resp.Status)
+		return
+	}
+
+	var release struct {
+		TagName string `json:"tag_name"`
+	}
+
+	if err := json.NewDecoder(resp.Body).Decode(&release); err != nil {
+		fmt.Println("Error decoding JSON response:", err)
+		return
+	}
+
+	latestVersion := release.TagName
+
+	if localVersion != latestVersion {
+		fmt.Printf("Your version (%s) is outdated. The latest version is %s.\n", localVersion, latestVersion)
+		fmt.Print("Do you want to update to the latest version? (y/n): ")
+
+		var choice string
+		fmt.Scanln(&choice)
+
+		if choice == "y" {
+			fmt.Printf("Updating to version %s...\n", latestVersion)
+			
+			
+			cmd := exec.Command("wget", "-O", "Acqui_scout.go", "https://raw.githubusercontent.com/Byte-BloggerBase/Acqui_scout/main/Acqui_scout.go")
+			if err := cmd.Run(); err != nil {
+				fmt.Println("Error updating script:", err)
+				return
+			}
+
+			
+			cmd9 := exec.Command("bash", "-c", "sudo go build Acqui_scout.go")
+			if err := cmd9.Run(); err != nil {
+				fmt.Println("Error building script:", err)
+				return
+			}
+
+			cmd10 := exec.Command("bash", "-c", "sudo mv Acqui_scout /usr/local/bin")
+			if err := cmd10.Run(); err != nil {
+				fmt.Println("Error moving binary:", err)
+				return
+			}
+
+			fmt.Printf("Update completed || Current Version (%s).\n", latestVersion)
+			fmt.Println("Run the tool again....")
+			os.Exit(0)
+		} else {
+			fmt.Println("Update canceled.")
+		}
+	} else {
+		fmt.Printf("You are using the latest version (%s).\n", localVersion)
+	}
+}
+
+
+func banner() {
+	fmt.Printf(`
+    _                   _   ____                  _ 
+   / \   ___ __ _ _   _(_) / ___|  ___ ___  _   _| |_
+  / _ \ / __/ _' | | | | | \___ \ / __/ _ \| | | | __|
+ / ___ \ (_| (_| | |_| | |  ___) | (_| (_) | |_| | |_ 
+/_/   \_\___\__, |\__,_|_| |____/ \___\___/ \__,_|\__|
+               |_| developed by: harshj054
+`)
+} 
 
 func main() {
 	banner()
+	checkForNewVersion()
 	if len(os.Args) < 2 {
 		fmt.Println("Please provide an organization name using '--org'")
 		return
@@ -217,13 +300,4 @@ func Rm_extra(){
 	errorChecker(cmd8.Run())
 }
 
-func banner() {
-	fmt.Printf(`
-    _                   _   ____                  _ 
-   / \   ___ __ _ _   _(_) / ___|  ___ ___  _   _| |_
-  / _ \ / __/ _' | | | | | \___ \ / __/ _ \| | | | __|
- / ___ \ (_| (_| | |_| | |  ___) | (_| (_) | |_| | |_ 
-/_/   \_\___\__, |\__,_|_| |____/ \___\___/ \__,_|\__|
-               |_| developed by: harshj054
-`)
-}
+
