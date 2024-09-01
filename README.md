@@ -24,12 +24,15 @@ This tool fetches and processes acquisition data related to a specified organiza
 ### Step 1: Download and Install Dependencies
 
 1. Clone or download this repository to your local machine.
+ ```
+   git clone https://github.com/Byte-BloggerBase/Acqui_scout.git
+ ```
 
-2. Run the `setup.sh` script to install all necessary dependencies:
+3. Run the `setup.sh` script to install all necessary dependencies:
 
-   ```bash
+ ```
    ./setup.sh
-   ```
+ ```
 
 This will check for and install the following:
 
