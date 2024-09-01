@@ -56,4 +56,4 @@ Replace `<organization_name>` with the name of the organization you want to sear
 
 After running the tool, you can check the results in the `f_output.txt` file. This file contains the processed acquisition data related to the specified organization.
 
-> If anyone would like to contribute to the development of Byte-BloggerBase/AsN_GrApEr, please send an email to official@bytebloggerbase.com.
+> If anyone would like to contribute to the development of Byte-BloggerBase/Acqui_scout, please send an email to official@bytebloggerbase.com.
