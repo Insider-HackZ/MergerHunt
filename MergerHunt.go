@@ -15,7 +15,7 @@ import (
 
 func checkForNewVersion() {
 	const localVersion = "v0.0.1"
-	repoURL := "https://api.github.com/repos/Byte-BloggerBase/Acqui_scout/releases/latest"
+	repoURL := "https://api.github.com/repos/Byte-BloggerBase/MergerHunt/releases/latest"
 
 	resp, err := http.Get(repoURL)
 	if err != nil {
@@ -51,20 +51,20 @@ func checkForNewVersion() {
 			fmt.Printf("Updating to version %s...\n", latestVersion)
 			
 			
-			cmd := exec.Command("wget", "-O", "Acqui_scout.go", "https://raw.githubusercontent.com/Byte-BloggerBase/Acqui_scout/main/Acqui_scout.go")
+			cmd := exec.Command("wget", "-O", "Acqui_scout.go", "https://raw.githubusercontent.com/Byte-BloggerBase/MergerHunt/main/MergerHunt.go")
 			if err := cmd.Run(); err != nil {
 				fmt.Println("Error updating script:", err)
 				return
 			}
 
 			
-			cmd9 := exec.Command("bash", "-c", "sudo go build Acqui_scout.go")
+			cmd9 := exec.Command("bash", "-c", "sudo go build MergerHunt.go")
 			if err := cmd9.Run(); err != nil {
 				fmt.Println("Error building script:", err)
 				return
 			}
 
-			cmd10 := exec.Command("bash", "-c", "sudo mv Acqui_scout /usr/local/bin")
+			cmd10 := exec.Command("bash", "-c", "sudo mv MergerHunt /usr/local/bin")
 			if err := cmd10.Run(); err != nil {
 				fmt.Println("Error moving binary:", err)
 				return
