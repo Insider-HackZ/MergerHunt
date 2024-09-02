@@ -51,7 +51,7 @@ func checkForNewVersion() {
 			fmt.Printf("Updating to version %s...\n", latestVersion)
 			
 			
-			cmd := exec.Command("wget", "-O", "Acqui_scout.go", "https://raw.githubusercontent.com/Byte-BloggerBase/MergerHunt/main/MergerHunt.go")
+			cmd := exec.Command("wget", "-O", "MergerHunt.go", "https://raw.githubusercontent.com/Byte-BloggerBase/MergerHunt/main/MergerHunt.go")
 			if err := cmd.Run(); err != nil {
 				fmt.Println("Error updating script:", err)
 				return
@@ -84,14 +84,14 @@ func checkForNewVersion() {
 
 func banner() {
 	fmt.Printf(`
-    _                   _   ____                  _ 
-   / \   ___ __ _ _   _(_) / ___|  ___ ___  _   _| |_
-  / _ \ / __/ _' | | | | | \___ \ / __/ _ \| | | | __|
- / ___ \ (_| (_| | |_| | |  ___) | (_| (_) | |_| | |_ 
-/_/   \_\___\__, |\__,_|_| |____/ \___\___/ \__,_|\__|
-               |_| developed by: harshj054
+ __  __                          _   _             _
+|  \/  | ___ _ __ __ _  ___ _ __| | | |_   _ _ __ | |_
+| |\/| |/ _ \ '__/ _' |/ _ \ '__| |_| | | | | '_ \| __|
+| |  | |  __/ | | |_| |  __/ |  |  _  | |_| | | | | |_
+|_|  |_|\___|_|  \__, |\___|_|  |_| |_|\__,_|_| |_|\__|
+                 |___/ developed by: harshj054
 `)
-} 
+}
 
 func main() {
 	banner()
