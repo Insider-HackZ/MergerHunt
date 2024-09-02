@@ -1,5 +1,4 @@
-# Acqui_scout
-
+# MergerHunt
 This tool fetches and processes acquisition data related to a specified organization. It uses Go for the main logic, shell commands for data extraction, and Python for HTML parsing.
 
 ## Features
@@ -25,7 +24,7 @@ This tool fetches and processes acquisition data related to a specified organiza
 
 1. Clone or download this repository to your local machine.
  ```
-   git clone https://github.com/Byte-BloggerBase/Acqui_scout.git
+ git clone https://github.com/Byte-BloggerBase/MergerHunt.git
  ```
 
 3. Run the `setup.sh` script to install all necessary dependencies:
@@ -47,7 +46,7 @@ This will check for and install the following:
 To use the tool, execute the following command in your terminal:
 
 ```
-Acqui_scout --org <organization_name>
+MergerHunt --org <organization_name>
 ```
 
 Replace `<organization_name>` with the name of the organization you want to search for.
@@ -56,4 +55,4 @@ Replace `<organization_name>` with the name of the organization you want to sear
 
 After running the tool, you can check the results in the `f_output.txt` file. This file contains the processed acquisition data related to the specified organization.
 
-> If anyone would like to contribute to the development of Byte-BloggerBase/Acqui_scout, please send an email to official@bytebloggerbase.com.
+> If anyone would like to contribute to the development of Byte-BloggerBase/MergerHunt, please send an email to official@bytebloggerbase.com.
