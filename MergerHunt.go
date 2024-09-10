@@ -12,9 +12,8 @@ import (
 	"encoding/json"
 )
 
-
 func checkForNewVersion() {
-	const localVersion = "v0.0.1"
+	const localVersion = "v0.1.1"
 	repoURL := "https://api.github.com/repos/Byte-BloggerBase/MergerHunt/releases/latest"
 
 	resp, err := http.Get(repoURL)
@@ -49,15 +48,13 @@ func checkForNewVersion() {
 
 		if choice == "y" {
 			fmt.Printf("Updating to version %s...\n", latestVersion)
-			
-			
+
 			cmd := exec.Command("wget", "-O", "MergerHunt.go", "https://raw.githubusercontent.com/Byte-BloggerBase/MergerHunt/main/MergerHunt.go")
 			if err := cmd.Run(); err != nil {
 				fmt.Println("Error updating script:", err)
 				return
 			}
 
-			
 			cmd9 := exec.Command("bash", "-c", "sudo go build MergerHunt.go")
 			if err := cmd9.Run(); err != nil {
 				fmt.Println("Error building script:", err)
@@ -80,7 +77,6 @@ func checkForNewVersion() {
 		fmt.Printf("You are using the latest version (%s).\n", localVersion)
 	}
 }
-
 
 func banner() {
 	fmt.Printf(`
@@ -108,20 +104,11 @@ func main() {
 		fmt.Println("Usage: go run tool.go --org <organization_name>")
 		return
 	}
-
-	err := runPythonScript()
-	if err != nil {
-		fmt.Println("Error running Python script:", err)
-	} else {
-		fmt.Println("Script executed successfully. Check f_output.txt for results.")
-	}
-	Rm_extra()
 }
 
 func command(searchTerm string) {
 	cmd := exec.Command("bash", "-c", fmt.Sprintf("googler -n 5 %s acquisition wikipedia --json > test.txt", searchTerm))
-	err := cmd.Run()
-	if err != nil {
+	if err := cmd.Run(); err != nil {
 		fmt.Println("Error running googler:", err)
 		return
 	}
@@ -129,13 +116,22 @@ func command(searchTerm string) {
 	fmt.Println("Working on it....")
 
 	cmd2 := exec.Command("bash", "-c", `cat test.txt | grep -oP '"url": *"\K[^"]+' | tee ot.txt`)
-	errorChecker(cmd2.Run())
+	if err := cmd2.Run(); err != nil {
+		fmt.Println("Error extracting URLs:", err)
+		return
+	}
 
 	cmd3 := exec.Command("bash", "-c", `rm test.txt`)
-	errorChecker(cmd3.Run())
+	if err := cmd3.Run(); err != nil {
+		fmt.Println("Error removing test.txt:", err)
+		return
+	}
 
 	urls, e := readURLsFromFile("ot.txt")
-	errorChecker(e)
+	if e != nil {
+		fmt.Println("Error reading URLs from file:", e)
+		return
+	}
 
 	urlKeywords := []string{"list", "mergers", "acquisitions"}
 	keywordGroups := [][]string{
@@ -159,17 +155,46 @@ func command(searchTerm string) {
 			fmt.Printf("Downloading: %s\n", url)
 			fileName := fmt.Sprintf("html_data-tool%d.txt", i+1)
 			cmd4 := exec.Command("bash", "-c", fmt.Sprintf("wget -O %s %s", fileName, url))
-			errorChecker(cmd4.Run())
+			if err := cmd4.Run(); err != nil {
+				fmt.Println("Error downloading URL:", err)
+				return
+			}
 
 			cmd5 := exec.Command("bash", "-c", fmt.Sprintf("paste -s -d ' ' %s >> output.txt", fileName))
-			errorChecker(cmd5.Run())
+			if err := cmd5.Run(); err != nil {
+				fmt.Println("Error appending data:", err)
+				return
+			}
 
 			cmd6 := exec.Command("bash", "-c", fmt.Sprintf("rm %s", fileName))
-			errorChecker(cmd6.Run())
+			if err := cmd6.Run(); err != nil {
+				fmt.Println("Error removing file:", err)
+				return
+			}
 		}
 	}
+
 	cmd7 := exec.Command("bash", "-c", "grep -oP '<td>.*?</td>' output.txt > all_td_tags.txt")
-	errorChecker(cmd7.Run())
+	if err := cmd7.Run(); err != nil {
+		fmt.Println("No data found make sure you are using correct org name else, NO ACQUISITION DATA IS PRESENT.", err)
+		Rm_extra()
+		return
+	}
+
+	
+	if isFileEmpty("all_td_tags.txt") {
+		fmt.Println("No data found in all_td_tags.txt. Skipping Python script execution.")
+		Rm_extra()
+	} else {
+		err := runPythonScript()
+		if err != nil {
+			fmt.Println("Error running Python script:", err)
+		} else {
+			fmt.Println("Script executed successfully. Check f_output.txt for results.")
+		}
+	}
+
+	Rm_extra()
 }
 
 func readURLsFromFile(filePath string) ([]string, error) {
@@ -177,7 +202,7 @@ func readURLsFromFile(filePath string) ([]string, error) {
 
 	file, err := os.Open(filePath)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error opening file %s: %w", filePath, err)
 	}
 	defer file.Close()
 
@@ -187,7 +212,7 @@ func readURLsFromFile(filePath string) ([]string, error) {
 	}
 
 	if err := scanner.Err(); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error reading file %s: %w", filePath, err)
 	}
 
 	return urls, nil
@@ -236,6 +261,18 @@ func isNumeric(str string) bool {
 	return err == nil
 }
 
+func isFileEmpty(filePath string) bool {
+	fileInfo, err := os.Stat(filePath)
+	if err != nil {
+		
+		if !os.IsNotExist(err) {
+			fmt.Println("Error checking file size:", err)
+		}
+		return true
+	}
+	return fileInfo.Size() == 0
+}
+
 func errorChecker(err error) {
 	if err != nil {
 		fmt.Println("Error:", err)
@@ -266,7 +303,6 @@ with open('f_output.txt', 'w') as output_file:
                 company = rows[i + 2].get_text(strip=True)
                 # Write each entry to the output file, each on a new line
                 output_file.write(f"Number: {number}, Date: {date}, Company: {company}\n")
-
 	`
 
 	tempFile, err := os.CreateTemp("", "*.py")
@@ -275,29 +311,21 @@ with open('f_output.txt', 'w') as output_file:
 	}
 	defer os.Remove(tempFile.Name())
 
-	// Write the Python code to the temporary file
 	_, err = tempFile.WriteString(pythonCode)
 	if err != nil {
 		return fmt.Errorf("error writing to temp file: %w", err)
 	}
 
-	// Execute the Python code
 	cmd := exec.Command("python3", tempFile.Name())
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		return fmt.Errorf("error executing Python code: %w\nOutput: %s", err, output)
 	}
 
-
 	return nil
 }
 
-func Rm_extra(){
-
-
-	
-	cmd8 := exec.Command("bash", "-c", "rm all_td_tags.txt output.txt ot.txt ")
-	errorChecker(cmd8.Run())
+func Rm_extra() {
+	cmd8 := exec.Command("bash", "-c", "rm all_td_tags.txt output.txt ot.txt")
+	cmd8.Run()
 }
-
-
